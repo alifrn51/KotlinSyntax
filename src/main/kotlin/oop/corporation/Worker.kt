@@ -13,6 +13,10 @@ abstract class Worker(
             else field = value
         }
 
+    fun printInfo(){
+        println("ID: ${id}, Name: ${name}, Age: ${age}, Salary: ${salary}, Position: ${employeePosition.title}")
+    }
+
     open fun work(){
         println("I'm working...")
     }
