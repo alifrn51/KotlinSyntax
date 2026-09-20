@@ -8,10 +8,12 @@ class WorkersRepository {
 
     fun changeSalary(id: Int, salary: Int) {
         val employees = getAllEmployee().toMutableList()
+        employeeFile.writeText(" ")
+
         for (employee in employees) {
+
             if (employee.id == id) {
                 employee.salary = salary
-                employeeFile.writeText(" ")
             }
             saveEmployeeToFile(employee)
         }
@@ -70,8 +72,7 @@ class WorkersRepository {
 
     private fun saveEmployeeToFile(worker: Worker) {
 
-        employeeFile.appendText("${worker.id}%${worker.name}%${worker.age}%${worker.salary}%")
-        employeeFile.appendText("${worker.employeePosition}\n")
+        employeeFile.appendText("${worker.id}%${worker.name}%${worker.age}%${worker.salary}%${worker.employeePosition}\n")
 
     }
 
