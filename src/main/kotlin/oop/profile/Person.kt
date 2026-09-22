@@ -1,9 +1,11 @@
 package org.example.oop.profile
 
-class Person(
-    var name: String,
+data class Person(
+    val name: String = "",
     val lastName: String,
-    val age: Int
+    val age: Int,
+    val height: Int,
+    val weight: Int,
 ) {
 
     val fullName: String
@@ -12,4 +14,5 @@ class Person(
     fun sayHello() {
         println("Hello, I'm <$name>! and I'm $age years old")
     }
+
 }

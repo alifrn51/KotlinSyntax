@@ -2,53 +2,61 @@ package org.example.oop.corporation
 
 import java.io.File
 
-class WorkersRepository {
+object WorkersRepository {
 
     private val employeeFile = File("employes.txt")
 
+    private val _workers = getAllEmployee()
+    val workers
+        get() = _workers.toList()
+
     fun changeSalary(id: Int, salary: Int) {
-        val employees = getAllEmployee().toMutableList()
-        employeeFile.writeText(" ")
-
-        for (employee in employees) {
-
-            if (employee.id == id) {
-                employee.salary = salary
+        for (worker in _workers) {
+            if (worker.id == id) {
+                val newWorker = worker.copy(salary = salary)
+                _workers.remove(worker)
+                _workers.add(newWorker)
+                break
             }
-            saveEmployeeToFile(employee)
+        }
+    }
+
+    fun changeAge(id: Int, age: Int) {
+        for (worker in _workers) {
+            if (worker.id == id) {
+                val newWorker = worker.copy(age = age)
+                _workers.remove(worker)
+                _workers.add(newWorker)
+                break
+            }
         }
     }
 
 
     fun fireEmployee(id: Int) {
-        val employees = getAllEmployee().toMutableList()
-        for (employee in employees) {
-            if (employee.id == id) {
-                employees.remove(employee)
-                employeeFile.writeText(" ")
+        for (worker in _workers) {
+            if (worker.id == id) {
+                _workers.remove(worker)
                 println("The employee with ID $id fired!")
                 break
             }
         }
-
-        for (employee in employees) {
-            saveEmployeeToFile(employee)
-        }
     }
 
 
-    fun getAllEmployee(): List<Worker> {
+    private fun getAllEmployee(): MutableSet<Worker> {
 
         val content = employeeFile.readText().trim()
-        if (content.isEmpty()) {
-            println("Employee list is empty!")
-            return emptyList()
-        }
-        val employees = mutableListOf<Worker>()
+
+        val employees = mutableSetOf<Worker>()
 
         val items = content.split("\n")
 
         for (item in items) {
+            if (item.isEmpty()) {
+                println("Employee list is empty!")
+                break
+            }
             val properties = item.split("%")
             val id = properties[0].toInt()
             val name = properties[1]
@@ -56,12 +64,11 @@ class WorkersRepository {
             val salary = properties[3].toInt()
             val employeePosition = EmployeePosition.valueOf(properties.last())
             val worker = when (employeePosition) {
-                EmployeePosition.ASSISTANT -> Assistant(id = id, name = name, age = age)
-                EmployeePosition.DIRECTOR -> Director(id = id, name = name, age = age)
-                EmployeePosition.CONSULTANT -> Consultant(id = id, name = name, age = age)
-                EmployeePosition.ACCOUNTANT -> Accountant(id = id, name = name, age = age)
+                EmployeePosition.ASSISTANT -> Assistant(id = id, name = name, age = age, salary = salary)
+                EmployeePosition.DIRECTOR -> Director(id = id, name = name, age = age, salary = salary)
+                EmployeePosition.CONSULTANT -> Consultant(id = id, name = name, age = age, salary = salary)
+                EmployeePosition.ACCOUNTANT -> Accountant(id = id, name = name, age = age, salary = salary)
             }
-            worker.salary = salary
             employees.add(worker)
         }
 
@@ -69,17 +76,27 @@ class WorkersRepository {
 
     }
 
+    fun getAssistantEmployee(id: Int): Assistant? {
 
-    private fun saveEmployeeToFile(worker: Worker) {
+        for (worker in _workers ){
+            if(worker.id == id && worker.employeePosition == EmployeePosition.ASSISTANT)
+                return worker as Assistant
+        }
 
-        employeeFile.appendText("${worker.id}%${worker.name}%${worker.age}%${worker.salary}%${worker.employeePosition}\n")
-
+        return null
     }
 
-    fun saveEmployee(worker: Worker) {
+    fun registerNewEmployee(newWorker: Worker) {
+        _workers.add(newWorker)
+    }
 
-        saveEmployeeToFile(worker)
+    fun saveChanges() {
+        val content = StringBuffer()
 
+        for (worker in _workers) {
+            content.append("${worker.id}%${worker.name}%${worker.age}%${worker.salary}%${worker.employeePosition}\n")
+        }
+        employeeFile.writeText(content.toString())
     }
 
 

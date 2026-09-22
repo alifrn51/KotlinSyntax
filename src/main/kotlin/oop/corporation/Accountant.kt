@@ -1,13 +1,23 @@
 package org.example.oop.corporation
 
-class Accountant(
-    id: Int,
-    name: String,
-    age: Int
-) : Worker(id = id, name = name, age = age, employeePosition = EmployeePosition.ACCOUNTANT), Cleaner, Supplier{
+data class Accountant(
+    override val id: Int,
+    override val name: String,
+    override val age: Int,
+    override val salary: Int
+) : Worker(id = id, name = name, age = age, employeePosition = EmployeePosition.ACCOUNTANT, salary = salary), Cleaner,
+    Supplier {
 
-    private val workersRepository = WorkersRepository()
-    private val productCardRepository = ProductCardRepository()
+    private val workersRepository = WorkersRepository
+    private val productCardRepository = ProductCardRepository
+
+    override fun copy(
+        id: Int,
+        name: String,
+        age: Int,
+        employeePosition: EmployeePosition,
+        salary: Int
+    ): Worker = Accountant(id = id,name = name, age = age, salary = salary)
 
     override fun work() {
 
@@ -29,7 +39,12 @@ class Accountant(
 
 
             when (operationCode) {
-                OperationCode.EXIT -> break
+                OperationCode.EXIT -> {
+                    workersRepository.saveChanges()
+                    productCardRepository.saveChanges()
+                    break
+                }
+
                 OperationCode.REGISTER_NEW_PRODUCT -> registerNewProductItem()
                 OperationCode.SHOW_ALL_PRODUCT -> showAllList()
                 OperationCode.REMOVE_PRODUCT -> removeProductItem()
@@ -37,6 +52,7 @@ class Accountant(
                 OperationCode.FIRE_EMPLOYEE -> fireEmployee()
                 OperationCode.SHOW_ALL_EMPLOYEE -> showAllEmployee()
                 OperationCode.CHANGE_SALARY -> changeSalary()
+                OperationCode.CHANGE_AGE -> changeAge()
             }
 
         }
@@ -53,11 +69,21 @@ class Accountant(
 
     }
 
+    private fun changeAge() {
+        print("Enter employee's id to change age: ")
+        val id = readln().toInt()
+        print("Enter new age: ")
+        val age = readln().toInt()
+
+        workersRepository.changeAge(id = id, age = age)
+
+    }
+
     private fun showAllEmployee() {
 
-        val employees = workersRepository.getAllEmployee()
+        val employees = workersRepository.workers
 
-        for (employee in employees){
+        for (employee in employees) {
             employee.printInfo()
         }
 
@@ -68,7 +94,8 @@ class Accountant(
         print("Enter employee's id of fire: ")
         val id = readln().toInt()
 
-        workersRepository.fireEmployee(id = id
+        workersRepository.fireEmployee(
+            id = id
         )
     }
 
@@ -92,26 +119,28 @@ class Accountant(
         val name = readln()
         print("Enter age: ")
         val age = readln().toInt()
+        print("Enter salary: ")
+        val salary = readln().toInt()
 
         val worker = when (employeeType) {
             EmployeePosition.ASSISTANT -> {
-                Assistant(id = id, name = name, age = age)
+                Assistant(id = id, name = name, age = age, salary = salary)
             }
 
             EmployeePosition.DIRECTOR -> {
-                Director(id = id, name = name, age = age)
+                Director(id = id, name = name, age = age, salary = salary)
             }
 
             EmployeePosition.CONSULTANT -> {
-                Consultant(id = id, name = name, age = age)
+                Consultant(id = id, name = name, age = age, salary = salary)
             }
 
             EmployeePosition.ACCOUNTANT -> {
-                Accountant(id = id, name = name, age = age)
+                Accountant(id = id, name = name, age = age, salary = salary)
             }
         }
 
-        workersRepository.saveEmployee(worker)
+        workersRepository.registerNewEmployee(worker)
     }
 
     private fun removeProductItem() {
@@ -123,7 +152,7 @@ class Accountant(
 
     private fun showAllList() {
 
-        val list = productCardRepository.readAllProductList()
+        val list = productCardRepository.products
         for (item in list) {
             item.printInfo()
         }
@@ -169,7 +198,7 @@ class Accountant(
             }
         }
 
-       productCardRepository.saveProductCard(card)
+        productCardRepository.registerProductCard(card)
     }
 
     private fun readProductValue(valueName: String): String {

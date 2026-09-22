@@ -1,13 +1,8 @@
 package org.example.oop.corporation
 
-class ShoesCard(
-    name: String,
-    brand: String,
-    price: Float,
+data class ShoesCard(
+    override val name: String,
+    override val brand: String,
+    override val price: Float,
     val size: Float,
-) : ProductCard(name = name,brand = brand, price = price, productType = ProductType.SHOE) {
-
-    override fun toString(): String {
-        return "Name: $name, Brand: $brand, Price: $price,Size: $size, Product type: $productType"
-    }
-}
+) : ProductCard(name = name,brand = brand, price = price, productType = ProductType.SHOE)

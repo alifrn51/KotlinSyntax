@@ -8,5 +8,6 @@ enum class OperationCode(val title: String) {
     REGISTER_NEW_EMPLOYEE(title = "Register new employee"),
     FIRE_EMPLOYEE(title = "Fire employee"),
     SHOW_ALL_EMPLOYEE(title = "Show all employee employee"),
-    CHANGE_SALARY(title = "Change salary")
+    CHANGE_SALARY(title = "Change salary"),
+    CHANGE_AGE(title = "Change age"),
 }

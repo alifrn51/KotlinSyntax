@@ -2,16 +2,31 @@ package org.example.oop.corporation
 
 import kotlin.random.Random
 
-class Consultant(id: Int, name: String, age: Int = 0) : Worker(
+data class Consultant(
+    override val id: Int,
+    override val name: String,
+    override val age: Int = 0,
+    override val salary: Int
+) : Worker(
     id = id,
     name = name,
     age = age,
-    employeePosition = EmployeePosition.CONSULTANT
+    employeePosition = EmployeePosition.CONSULTANT,
+    salary = salary
 ) {
 
     override fun work() {
         println("Consultant working...")
     }
+
+    override fun copy(
+        id: Int,
+        name: String,
+        age: Int,
+        employeePosition: EmployeePosition,
+        salary: Int
+    ): Worker = Consultant(id = id,name = name, age = age, salary = salary)
+
 
     fun serveCustomers(): Int {
 

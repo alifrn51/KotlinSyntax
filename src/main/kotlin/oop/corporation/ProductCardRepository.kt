@@ -2,35 +2,29 @@ package org.example.oop.corporation
 
 import java.io.File
 
-class ProductCardRepository {
+object ProductCardRepository {
 
 
     private val productFile = File("product_cards.txt")
+    private val _products = getAllProducts()
+    val products
+        get() = _products.toList()
 
 
     fun removeProductItem(name: String) {
 
-        val productCards = readAllProductList()
-
-        for (productCard in productCards) {
+        for (productCard in _products) {
             if (productCard.name == name) {
-                productCards.remove(productCard)
+                _products.remove(productCard)
                 println("The product with name $name removed!")
                 break
             }
         }
-
-        productFile.writeText("")
-
-        for (productCard in productCards) {
-            saveProductCardToFile(productCard)
-        }
-
     }
 
-    fun readAllProductList(): MutableList<ProductCard> {
+    private fun getAllProducts(): MutableSet<ProductCard> {
 
-        val list = mutableListOf<ProductCard>()
+        val list = mutableSetOf<ProductCard>()
         val content = productFile.readText().trim()
         val items = content.split("\n")
 
@@ -68,34 +62,35 @@ class ProductCardRepository {
         return list
     }
 
+    fun saveChanges(){
+        val content = StringBuilder()
 
-    private fun saveProductCardToFile(productCard: ProductCard) {
+        for (productCard in _products){
 
-        productFile.appendText("${productCard.name}%")
-        productFile.appendText("${productCard.brand}%")
-        productFile.appendText("${productCard.price}%")
+            content.append("${productCard.name}%${productCard.brand}%${productCard.price}%")
+            when (productCard) {
+                is FoodCard -> {
+                    content.append("${productCard.caloric}%")
+                }
 
+                is ApplianceCard -> {
+                    content.append("${productCard.wattage}%")
+                }
 
-        when (productCard) {
-            is FoodCard -> {
-                productFile.appendText("${productCard.caloric}%")
+                is ShoesCard -> {
+                    content.append("${productCard.size}%")
+                }
             }
 
-            is ApplianceCard -> {
-                productFile.appendText("${productCard.wattage}%")
-            }
-
-            is ShoesCard -> {
-                productFile.appendText("${productCard.size}%")
-            }
+            content.append("${productCard.productType}\n")
         }
-
-        productFile.appendText("${productCard.productType}\n")
-
     }
 
-    fun saveProductCard(productCard: ProductCard)
+
+    fun registerProductCard(productCard: ProductCard)
     {
-        saveProductCardToFile(productCard)
+        _products.add(productCard)
     }
+
+
 }
